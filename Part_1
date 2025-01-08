@@ -1,0 +1,157 @@
+using System;
+
+namespace Obema_Lab
+{
+    public class Discipline
+    {
+        // Поля класса
+        private string name;
+        private int contactHours;
+        private int selfHours;
+
+        // Статическая переменная для подсчёта объектов
+        private static int objectCount = 0;
+
+        // Свойства
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
+        public int ContactHours
+        {
+            get => contactHours;
+            set => contactHours = value >= 0 ? value : throw new ArgumentException("Количество аудиторных часов не может быть меньше 0");
+        }
+
+        public int SelfHours
+        {
+            get => selfHours;
+            set => selfHours = value >= 0 ? value : throw new ArgumentException("Количество самостоятельных часов не может быть меньше 0");
+        }
+
+        // Конструкторы
+        public Discipline()
+        {
+            name = "Неизвестно";
+            contactHours = 0;
+            selfHours = 0;
+            objectCount++;
+        }
+
+        public Discipline(string Name, int contactHours, int selfHours)
+        {
+            name = Name;
+            ContactHours = contactHours;
+            SelfHours = selfHours;
+            objectCount++;
+        }
+
+        public Discipline(Discipline other)
+        {
+            name = other.name;
+            ContactHours = other.ContactHours;
+            SelfHours = other.SelfHours;
+            objectCount++;
+        }
+
+        // Метод для вывода информации об объекте
+        public void DisplayInfo()
+        { 
+            Console.WriteLine($"Дисциплина: {name}, Аудиторные часы: {ContactHours}, Самостоятельные часы: {SelfHours}");
+        }
+
+        // Статическая функция для вычисления зачётных единиц
+        public static int CalculateCreditUnitsStatic(int contactHours, int selfHours)
+        {
+            int totalHours = contactHours + selfHours;
+            return totalHours / 38;
+        }
+
+        // Метод класса для вычисления зачётных единиц
+        public int CalculateCreditUnits()
+        {
+            int totalHours = ContactHours + SelfHours;
+            return totalHours / 38;
+        }
+
+        // Метод для получения количества объектов
+        public static int GetObjectCount()
+        {
+            return objectCount;
+        }
+    }
+
+    public class UserInterface
+    {
+        public static int CheckInt(string message)
+        {
+            int number;
+            bool IsNumber;
+            do
+            {
+                Console.Write(message);
+                IsNumber = int.TryParse(Console.ReadLine(), out number);
+                if (!IsNumber || number < -10000 || number > 10000)
+                {
+                    IsNumber = false;
+                    Console.WriteLine("Некорректный ввод целого числа. Число должно быть от -10000 до 10000.");
+                }
+            } while (!IsNumber);
+
+            return number;
+        }
+
+        public static Discipline InputDiscipline()
+        {
+            Console.Write("Enter discipline name: ");
+            string name = Console.ReadLine();
+
+            int contactHours = CheckInt("Enter contact hours: ");
+
+            int selfHours = CheckInt("Enter self-hours hours: ");
+
+            return new Discipline(name, contactHours, selfHours);
+        }
+
+        public static void DisplayResult(Discipline discipline)
+        {
+            discipline.DisplayInfo();
+            Console.WriteLine($"Credit Units: {discipline.CalculateCreditUnits()}");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Дисциплины
+            Console.WriteLine("Дисциплина 1");
+            Discipline userDiscipline_1 = UserInterface.InputDiscipline();
+
+            Console.WriteLine("Дисциплина 2");
+            Discipline userDiscipline_2 = UserInterface.InputDiscipline();
+
+            Discipline userDiscipline_3 = new Discipline(userDiscipline_1);
+
+            //Console.WriteLine("Дисциплина 3");
+            //Discipline userDiscipline_3 = UserInterface.InputDiscipline();
+
+            // Вывод результата
+            UserInterface.DisplayResult(userDiscipline_1);
+            UserInterface.DisplayResult(userDiscipline_2);
+            UserInterface.DisplayResult(userDiscipline_3);
+
+            Console.WriteLine(' ');
+
+            // Демонстрация вычисления зачётных единиц
+            Console.WriteLine("Статический метод: Кредиты для дисциплины 1 = " + Discipline.CalculateCreditUnitsStatic(userDiscipline_1.ContactHours, userDiscipline_1.SelfHours));
+            Console.WriteLine("Метод копирования: Кредиты для дисциплины 2 = " + userDiscipline_2.CalculateCreditUnits());
+
+ 
+            Console.WriteLine("Общее количество дисциплин: " + Discipline.GetObjectCount());
+        }
+    }
+}
+ 
