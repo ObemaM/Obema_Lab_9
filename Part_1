@@ -4,16 +4,13 @@ namespace Obema_Lab
 {
     public class Discipline
     {
-        // Поля класса
-        private string name;
+        private string name; // Поля класса
         private int contactHours;
         private int selfHours;
 
-        // Статическая переменная для подсчёта объектов
-        private static int objectCount = 0;
+        private static int objectCount = 0;  // Статическая переменная для подсчёта объектов
 
-        // Свойства
-        public string Name
+        public string Name // Свойства
         {
             get => name;
             set => name = value;
@@ -31,8 +28,7 @@ namespace Obema_Lab
             set => selfHours = value >= 0 ? value : throw new ArgumentException("Количество самостоятельных часов не может быть меньше 0");
         }
 
-        // Конструкторы
-        public Discipline()
+        public Discipline() // Конструкторы
         {
             name = "Неизвестно";
             contactHours = 0;
@@ -56,28 +52,24 @@ namespace Obema_Lab
             objectCount++;
         }
 
-        // Метод для вывода информации об объекте
-        public void DisplayInfo()
+        public void DisplayInfo() // Метод для вывода информации об объекте
         { 
             Console.WriteLine($"Дисциплина: {name}, Аудиторные часы: {ContactHours}, Самостоятельные часы: {SelfHours}");
         }
 
-        // Статическая функция для вычисления зачётных единиц
-        public static int CalculateCreditUnitsStatic(int contactHours, int selfHours)
+        public static int CalculateCreditUnitsStatic(int contactHours, int selfHours) // Статическая функция для вычисления зачётных единиц
         {
             int totalHours = contactHours + selfHours;
             return totalHours / 38;
         }
 
-        // Метод класса для вычисления зачётных единиц
-        public int CalculateCreditUnits()
+        public int CalculateCreditUnits() // Метод класса для вычисления зачётных единиц
         {
             int totalHours = ContactHours + SelfHours;
             return totalHours / 38;
         }
 
-        // Метод для получения количества объектов
-        public static int GetObjectCount()
+        public static int GetObjectCount() // Метод для получения количества объектов
         {
             return objectCount;
         }
@@ -126,8 +118,7 @@ namespace Obema_Lab
     {
         static void Main(string[] args)
         {
-            //Дисциплины
-            Console.WriteLine("Дисциплина 1");
+            Console.WriteLine("Дисциплина 1"); //Дисциплины
             Discipline userDiscipline_1 = UserInterface.InputDiscipline();
 
             Console.WriteLine("Дисциплина 2");
@@ -135,18 +126,13 @@ namespace Obema_Lab
 
             Discipline userDiscipline_3 = new Discipline(userDiscipline_1);
 
-            //Console.WriteLine("Дисциплина 3");
-            //Discipline userDiscipline_3 = UserInterface.InputDiscipline();
-
-            // Вывод результата
-            UserInterface.DisplayResult(userDiscipline_1);
+            UserInterface.DisplayResult(userDiscipline_1); // Вывод результата
             UserInterface.DisplayResult(userDiscipline_2);
             UserInterface.DisplayResult(userDiscipline_3);
 
             Console.WriteLine(' ');
 
-            // Демонстрация вычисления зачётных единиц
-            Console.WriteLine("Статический метод: Кредиты для дисциплины 1 = " + Discipline.CalculateCreditUnitsStatic(userDiscipline_1.ContactHours, userDiscipline_1.SelfHours));
+            Console.WriteLine("Статический метод: Кредиты для дисциплины 1 = " + Discipline.CalculateCreditUnitsStatic(userDiscipline_1.ContactHours, userDiscipline_1.SelfHours)); // Демонстрация вычисления зачётных единиц
             Console.WriteLine("Метод копирования: Кредиты для дисциплины 2 = " + userDiscipline_2.CalculateCreditUnits());
 
  
