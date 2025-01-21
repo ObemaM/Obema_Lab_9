@@ -1,1 +1,218 @@
+using System;
+
+namespace Obema_Lab
+{
+    public class Discipline
+    {
+        private string name;
+        private int contactHours;
+        private int selfHours;
+
+        private static int objectCount = 0;
+
+        public string Name
+        {
+            get => name;
+            set => name = value;
+        }
+
+        public int ContactHours
+        {
+            get => contactHours;
+            set
+            {
+                if (value >= 0)
+                    contactHours = value;
+                else
+                    throw new ArgumentException("Количество аудиторных часов не может быть меньше 0 и не может быть меньше 0");
+            }
+        }
+
+        public int SelfHours
+        {
+            get => selfHours;
+            set
+            {
+                if (value >= 0)
+                    selfHours = value;
+                else
+                    throw new ArgumentException("Количество самостоятельных часов не может быть меньше 0 и не может быть меньше 0");
+            }
+        }
+
+        public Discipline()
+        {
+            name = "Неизвестно";
+            contactHours = 0;
+            selfHours = 0;
+            objectCount++;
+        }
+
+        public Discipline(string Name, int contactHours, int selfHours)
+        {
+            name = Name;
+            ContactHours = contactHours;
+            SelfHours = selfHours;
+            objectCount++;
+        }
+
+        public Discipline(Discipline other)
+        {
+            name = other.name;
+            ContactHours = other.ContactHours;
+            SelfHours = other.SelfHours;
+            objectCount++;
+        }
+
+        public void DisplayInfo()
+        {
+            Console.WriteLine($"Дисциплина: {name}, Аудиторные часы: {ContactHours}, Самостоятельные часы: {SelfHours}");
+        }
+
+        public static int CalculateCreditUnits(int contactHours, int selfHours)
+        {
+            int totalHours = contactHours + selfHours;
+            return totalHours / 38;
+        }
+
+        public int CalculateCreditUnits()
+        {
+            int totalHours = ContactHours + SelfHours;
+            return totalHours / 38;
+        }
+
+        public static int GetObjectCount()
+        {
+            return objectCount;
+        }
+
+        public static Discipline operator ++(Discipline discipline)
+        {
+            if (discipline.ContactHours + 2 > discipline.ContactHours + discipline.SelfHours)
+                throw new Exception("Сумма часов превышает общий лимит!");
+            else
+            {
+                discipline.ContactHours += 2;
+                discipline.SelfHours -= 2;
+                return discipline;
+            }
+        }
+
+        public static implicit operator int(Discipline discipline)
+        {
+            return discipline.ContactHours / 2; // Количество пар
+        }
+
+        public static explicit operator double(Discipline discipline)
+        {
+            return (double)discipline.ContactHours / (discipline.ContactHours + discipline.SelfHours);
+        }
+
+        public static double operator !(Discipline discipline)
+        {
+            return (double)discipline.SelfHours / (discipline.ContactHours + discipline.SelfHours) * 100;
+        }
+
+        public static bool operator >=(Discipline d1, Discipline d2)
+        {
+            return d1.ContactHours + d1.SelfHours >= d2.ContactHours + d2.SelfHours;
+        }
+
+        public static bool operator <=(Discipline d1, Discipline d2)
+        {
+            return d1.ContactHours + d1.SelfHours <= d2.ContactHours + d2.SelfHours;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Discipline other)
+            {
+                return Name == other.Name &&
+                       ContactHours == other.ContactHours &&
+                       SelfHours == other.SelfHours;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, ContactHours, SelfHours);
+        }
+    }
+
+    public class UserInterface
+    {
+        public static int CheckInt(string message)
+        {
+            int number;
+            bool IsNumber;
+            do
+            {
+                Console.Write(message);
+                IsNumber = int.TryParse(Console.ReadLine(), out number);
+                if (!IsNumber || number < -10000 || number > 10000)
+                    {
+                    IsNumber = false;
+                    Console.WriteLine("Некорректный ввод целого числа. Число должно быть от -10000 до 10000.");
+                }
+            } while (!IsNumber);
+
+            return number;
+        }
+
+        public static Discipline InputDiscipline()
+        {
+            Console.Write("Введите название дисциплины: ");
+            string name = Console.ReadLine();
+
+            int contactHours = CheckInt("Введите количество аудиторных часов: ");
+
+            int selfHours = CheckInt("Введите количество самостоятельных часов: ");
+
+            return new Discipline(name, contactHours, selfHours);
+        }
+
+        public static void DisplayResult(Discipline discipline)
+        {
+            discipline.DisplayInfo();
+            Console.WriteLine($"Кредиты: {discipline.CalculateCreditUnits()}");
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Дисциплина 1");
+            Discipline discipline1 = UserInterface.InputDiscipline();
+
+            Console.WriteLine("Дисциплина 2");
+            Discipline discipline2 = UserInterface.InputDiscipline();
+
+            Discipline discipline3 = new Discipline(discipline1);
+
+            UserInterface.DisplayResult(discipline1);
+            UserInterface.DisplayResult(discipline2);
+            UserInterface.DisplayResult(discipline3);
+
+            discipline1++;
+            Console.WriteLine("\nПосле увеличения аудиторных часов у Дисциплины 1:");
+            discipline1.DisplayInfo();
+
+            Console.WriteLine($"\nПроцент самостоятельной работы у Дисциплины 2: {!discipline2}%");
+            Console.WriteLine($"Доля аудиторной работы у Дисциплины 1: {(double)discipline1}");
+
+            Console.WriteLine($"\nКоличество пар по Дисциплине 2: {(int)discipline2}");
+
+            Console.WriteLine($"\nДисциплина 1 >= Дисциплина 2? {discipline1 >= discipline2}");
+            Console.WriteLine($"Дисциплина 1 <= Дисциплина 2? {discipline1 <= discipline2}");
+
+            Console.WriteLine("\nСтатический метод: Кредиты для дисциплины 1 = " + Discipline.CalculateCreditUnits(discipline1.ContactHours, discipline1.SelfHours));
+            Console.WriteLine("Метод копирования: Кредиты для дисциплины 2 = " + discipline2.CalculateCreditUnits());
+
+            Console.WriteLine("\nОбщее количество дисциплин: " + Discipline.GetObjectCount());
+        }
+    }
+}
+
 
