@@ -1,0 +1,123 @@
+using System;
+
+public class Discipline
+{
+    private string name;
+    private int contactHours;
+    private int selfHours;
+    private static int objectCount = 0;
+
+    public static object[] DisciplineInfo(Discipline discipline)
+    {
+        return [discipline.Name, discipline.ContactHours, discipline.SelfHours];
+    }
+
+    public string Name
+    {
+        get => name;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                name = "Без названия";
+            else
+                name = value;
+        }
+    }
+
+    public int ContactHours
+    {
+        get => contactHours;
+        set => contactHours = value;
+    }
+
+    public int SelfHours
+    {
+        get => selfHours;
+        set => selfHours = value;
+    }
+
+    public Discipline()
+    {
+        Name = "Новая дисциплина";
+        ContactHours = 0;
+        SelfHours = 0;
+        objectCount++;
+    }
+
+    public Discipline(string name, int contactHours, int selfHours)
+    {
+        Name = name;
+        ContactHours = contactHours;
+        SelfHours = selfHours;
+        objectCount++;
+    }
+
+    public Discipline(Discipline other)
+    {
+        Name = other.Name;
+        ContactHours = other.ContactHours;
+        SelfHours = other.SelfHours;
+        objectCount++;
+    }
+
+    public static int CalculateUnitsStatic(int contactHours, int selfHours)
+    {
+        return (contactHours + selfHours) / 38;
+    }
+
+    public int CalculateUnits()
+    {
+        return (ContactHours + SelfHours) / 38;
+    }
+
+    public static int GetObjectCount()
+    {
+        return objectCount;
+    }
+
+    public static Discipline operator ++(Discipline discipline)
+    {
+        if (discipline.ContactHours + 2 > discipline.ContactHours + discipline.SelfHours)
+            throw new InvalidOperationException("Сумма часов превышает общий лимит");
+        discipline.ContactHours += 2;
+        discipline.SelfHours -= 2;
+        return discipline;
+    }
+
+    public static implicit operator int(Discipline discipline)
+    {
+        return discipline.ContactHours / 2 + discipline.ContactHours % 2;
+    }
+
+    public static explicit operator double(Discipline discipline)
+    {
+        return (double)discipline.ContactHours / (discipline.ContactHours + discipline.SelfHours) * 100;
+    }
+
+    public static double operator !(Discipline discipline)
+    {
+        return (double)discipline.SelfHours / (discipline.ContactHours + discipline.SelfHours) * 100;
+    }
+
+    public static bool operator >=(Discipline d1, Discipline d2)
+    {
+        return d1.ContactHours + d1.SelfHours >= d2.ContactHours + d2.SelfHours;
+    }
+
+    public static bool operator <=(Discipline d1, Discipline d2)
+    {
+        return d1.ContactHours + d1.SelfHours <= d2.ContactHours + d2.SelfHours;
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is Discipline other)
+        {
+            return Name == other.Name && ContactHours == other.ContactHours && SelfHours == other.SelfHours;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
