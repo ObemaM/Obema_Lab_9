@@ -1,0 +1,82 @@
+using System;
+
+namespace Obema_Lab
+{
+    public class DisciplineArray
+    {
+        public Discipline[] disciplines;
+
+        public static int collectionCount = 0;
+
+        public DisciplineArray()
+        {
+            disciplines = new Discipline[0];
+
+            collectionCount++;
+        }
+
+        public DisciplineArray(int size)
+        {
+            disciplines = new Discipline[size];
+
+            Random random = new Random();
+            for (int i = 0; i < disciplines.Length; i++)
+            {
+                disciplines[i] = new Discipline(
+                    $"Дисциплина {i + 1}",
+                    random.Next(1, 10000),
+                    random.Next(1, 10000)
+                );
+            }
+
+            collectionCount++;
+        }
+
+        public DisciplineArray(DisciplineArray other)
+        {
+            disciplines = new Discipline[other.disciplines.Length];
+            for (int i = 0; i < other.disciplines.Length; i++)
+            {
+                if (other.disciplines[i] != null)
+                    disciplines[i] = new Discipline(other.disciplines[i]);
+                else
+                    disciplines[i] = null;
+            }
+
+            collectionCount++;
+        }
+
+        public Discipline this[int index]
+        {
+            get
+            {
+                if (index < 0 || index >= disciplines.Length)
+                    throw new IndexOutOfRangeException("Индекс за пределами массива.");
+                return disciplines[index];
+            }
+            set
+            {
+                if (index < 0 || index >= disciplines.Length)
+                    throw new IndexOutOfRangeException("Индекс за пределами массива.");
+                disciplines[index] = value;
+            }
+        }
+
+        public object[][] DisplayAll()
+        {
+            object[][] displayAll = new object[disciplines.Length][];
+
+            for (int i = 0; i < disciplines.Length; i++)
+            {
+                displayAll[i] = [disciplines[i].Name, disciplines[i].ContactHours, disciplines[i].SelfHours];
+            }
+
+            return (displayAll);
+        }
+
+        public static int GetCollectionCount()
+        {
+            return collectionCount;
+        }
+    }
+}
