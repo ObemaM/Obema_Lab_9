@@ -3,7 +3,7 @@ using System;
 
 public class Program
 {
-    public static void BadInputForCheckInt(int min, int max)
+    public static void WrongInputForCheckInt(int min, int max)
     {
         Text($"Некорректный ввод! Введите целое число от {min} до {max}.");
     }
@@ -85,7 +85,7 @@ public class Program
                     {
                         if (len >= 10)
                         {
-                            Text($"Достигнуто максимальное количество дисциплин - {len}");
+                            Text($"\nДостигнуто максимальное количество дисциплин - {len}");
                             break;
                         }
                         else
@@ -168,20 +168,25 @@ public class Program
                                 Text("\nДисциплины различаются");
                         }
                         else
-                            Text("Дисциплин слишком мало");
+                            Text("\nДисциплин слишком мало");
                         break;
                     }
                 case 4:
                     {
-                        int number = InputSome.CheckInt("Выберите номер дисциплины для редактирования: ", 1, len);
-                        SmallText("\nВведите название: ");
-                        disciplines[number - 1] = InputSome.InputDiscipline();
-                        Text("Дисциплина отредактирована");
+                        if (len > 1)
+                        {
+                            int number = InputSome.CheckInt("Выберите номер дисциплины для редактирования: ", 1, len);
+                            SmallText("\nВведите название: ");
+                            disciplines[number - 1] = InputSome.InputDiscipline();
+                            Text("Дисциплина отредактирована");
+                        }
+                        else
+                            Text("\nДисциплин слишком мало");
                         break;
                     }
                 case 5:
                     if (count == 0)
-                        Text("\nМассив дисциплин пуст.");
+                        Text("\nМассив дисциплин пуст");
                     else
                     {
                         for (int i = 0; i < len; i++)
