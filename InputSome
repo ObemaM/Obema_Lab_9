@@ -22,7 +22,7 @@ public class InputSome
             isNumber = int.TryParse(Console.ReadLine(), out number);
             if (!isNumber || number < min || number > max)
             {
-                Program.BadInputForCheckInt(min, max);
+                Program.WrongInputForCheckInt(min, max);
                 isNumber = false;
             }
         } while (!isNumber);
