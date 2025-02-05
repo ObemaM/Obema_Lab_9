@@ -1,11 +1,18 @@
+
 using Obema_Lab;
 using System;
+using System.Diagnostics.Contracts;
 
 public class Program
 {
     public static void WrongInputForCheckInt(int min, int max)
     {
         Text($"Некорректный ввод! Введите целое число от {min} до {max}.");
+    }
+
+    public static void WrongInputForEvenCheck()
+    {
+        Text($"Некорректный ввод! Число аудиторных часов должно быть четным.");
     }
 
     public static void Text(string message)
@@ -18,7 +25,7 @@ public class Program
         Console.Write(message);
     }
 
-    public static void DisplayArray(object[][] displayArray) 
+    public static void DisplayArray(object[][] displayArray)
     {
         for (int i = 0; i < displayArray.Length; i++)
         {
@@ -40,25 +47,21 @@ public class Program
 
     public static double CalculateAverageCredits(DisciplineArray disciplineArray)
     {
-        int totalHours = 0;
         int totalCredits = 0;
+        int totalUnits = 0;
+        int disciplineCount = disciplineArray.disciplines.Length;
 
-        for (int i = 0; i < disciplineArray.disciplines.Length; i++)
+        for (int i = 0; i < disciplineCount; i++)
         {
-            Discipline discipline = disciplineArray[i];
-            if (discipline != null)
-            {
-                int hours = discipline.ContactHours + discipline.SelfHours;
-                totalHours += hours;
-                totalCredits += (int)discipline;
-            }
+            int units = disciplineArray.disciplines[i].CalculateUnits();
+            totalCredits += units;
+            totalUnits += units * 38;
         }
 
-        if (totalHours == 0)
-            return 0;
-        else
-            return (double)totalCredits / totalHours;
+         return (double)totalCredits / disciplineCount;
     }
+
+
 
     public static void Main(string[] args)
     {
@@ -147,12 +150,9 @@ public class Program
 
                         for (int i = 0; i < len; i++)
                         {
-                            if (disciplines[i] != null)
-                            {
-                                Text($"\nИнформация о дисциплине {i + 1}:");
-                                object[] disciplineInfo = Discipline.DisciplineInfo(disciplines[i]);
-                                DisplayInfo(disciplineInfo);
-                            }
+                            Text($"\nИнформация о дисциплине {i + 1}:");
+                            object[] disciplineInfo = Discipline.DisciplineInfo(disciplines[i]);
+                            DisplayInfo(disciplineInfo);
                         }
                     }
                     break;
@@ -191,54 +191,49 @@ public class Program
                     {
                         for (int i = 0; i < len; i++)
                         {
-                            if (disciplines[i] == null)
-                                break;
-                            else
+                            ConsoleColor originalColor = Console.ForegroundColor;
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Text($"\nДисциплина {i + 1}");
+                            Console.ForegroundColor = originalColor;
+
+                            int contactHours = disciplines[i].ContactHours;
+                            int selfHours = disciplines[i].SelfHours;
+
+                            Text("\nЧасть 1");
+                            Text($"\nКредиты для дисциплины {i + 1}: {Discipline.CalculateUnitsStatic(contactHours, selfHours)}");
+                            Text("Метод копирования: Кредиты для дисциплины 1: " + disciplines[0].CalculateUnits());
+                            Text("Общее количество дисциплин: " + Discipline.GetObjectCount());
+
+                            Text("\nЧасть 2");
+                            try
                             {
-                                ConsoleColor originalColor = Console.ForegroundColor;
-                                Console.ForegroundColor = ConsoleColor.Green;
-                                Text($"\nДисциплина {i + 1}");
-                                Console.ForegroundColor = originalColor;
+                                Text($"\nПосле увеличения аудиторных часов у дисциплины {i + 1}:");
+                                object[] disciplineInfoPlus = Discipline.DisciplineInfo(++disciplines[i]);
+                                DisplayInfo(disciplineInfoPlus);
+                            }
+                            catch (Exception ex)
+                            {
+                                Text($"Увеличение количества аудиторных часов невозможно: {ex.Message}");
+                            }
 
-                                int contactHours = disciplines[i].ContactHours;
-                                int selfHours = disciplines[i].SelfHours;
+                            Text($"\nДоля самостоятельной работы у дисциплины {i + 1}: {Math.Round(!disciplines[i], 3)}");
+                            Text($"Доля аудиторной работы у дисциплины {i + 1}: {Math.Round((double)disciplines[i], 3)}");
+                            Text($"Количество пар по дисциплине {i + 1}: {disciplines[i]}");
 
-                                Text("\nЧасть 1");
-                                Text($"\nКредиты для дисциплины {i + 1}: {Discipline.CalculateUnitsStatic(contactHours, selfHours)}"); 
-                                Text("Метод копирования: Кредиты для дисциплины 1: " + disciplines[0].CalculateUnits());
-                                Text("Общее количество дисциплин: " + Discipline.GetObjectCount());
-
-                                Text("\nЧасть 2");
-                                try
-                                {
-                                    Text($"\nПосле увеличения аудиторных часов у дисциплины {i + 1}:");
-                                    object[] disciplineInfoPlus = Discipline.DisciplineInfo(++disciplines[i]);
-                                    DisplayInfo(disciplineInfoPlus);
-                                }
-                                catch (Exception ex)
-                                {
-                                    Text($"Увеличение количества аудиторных часов невозможно: {ex.Message}");
-                                }
-
-                                Text($"\nДоля самостоятельной работы у дисциплины {i + 1}: {Math.Round(!disciplines[i], 3)}");
-                                Text($"Доля аудиторной работы у дисциплины {i + 1}: {Math.Round((double)disciplines[i], 3)}");
-                                Text($"Количество пар по дисциплине {i + 1}: {1 + disciplines[i]}");
-
-                                Text("\nСравнение по суммарному количеству часов: ");
-                                if (i == 1 && i + 1 < len)
-                                {
-                                    if (disciplines[i] >= disciplines[i + 1])
-                                        Text($"\nДисциплина {i} >= Дисциплина {i + 1}");
-                                    else
-                                        Text($"\nДисциплина {i} < Дисциплина {i + 1}");
-                                }
-                                if (i == 2 && i + 1 < len)
-                                {
-                                    if (disciplines[i] <= disciplines[i + 1])
-                                        Text($"\nДисциплина {i} <= Дисциплина {i + 1}");
-                                    else
-                                        Text($"\nДисциплина {i} > Дисциплина {i + 1}");
-                                }
+                            Text("\nСравнение по суммарному количеству часов: ");
+                            if (i == 1 && i + 1 < len)
+                            {
+                                if (disciplines[i] >= disciplines[i + 1])
+                                    Text($"\nДисциплина {i} >= Дисциплина {i + 1}");
+                                else
+                                    Text($"\nДисциплина {i} < Дисциплина {i + 1}");
+                            }
+                            if (i == 2 && i + 1 < len)
+                            {
+                                if (disciplines[i] <= disciplines[i + 1])
+                                    Text($"\nДисциплина {i} <= Дисциплина {i + 1}");
+                                else
+                                    Text($"\nДисциплина {i} > Дисциплина {i + 1}");
                             }
                         }
                     }
@@ -271,7 +266,7 @@ public class Program
                             Text($"Изменение дисциплины по индексу {index}.");
                             SmallText("\nВведите название: ");
                             disciplineArray[index] = new Discipline(InputSome.NameInput(Console.ReadLine()), InputSome.CheckInt("Введите количество аудиторных часов: ", 1, 10000), InputSome.CheckInt("Введите количество самостоятельных часов: ", 1, 10000));
-                            object [] disciplineInfoIndex = Discipline.DisciplineInfo(disciplineArray[index]);
+                            object[] disciplineInfoIndex = Discipline.DisciplineInfo(disciplineArray[index]);
                             DisplayInfo(disciplineInfoIndex);
                         }
                         catch (Exception ex)
