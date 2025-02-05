@@ -1,3 +1,4 @@
+
 using Obema_Lab;
 using System;
 using System.Xml.Linq;
@@ -30,32 +31,51 @@ public class InputSome
         return number;
     }
 
+    public static int CheckEvenInt(string message, int min, int max)
+    {
+        int number;
+        bool isNumber;
+        do
+        {
+            Console.Write(message);
+            isNumber = int.TryParse(Console.ReadLine(), out number);
+            if (!isNumber || number < min || number > max)
+            {
+                Program.WrongInputForCheckInt(min, max);
+                isNumber = false;
+            }
+            else
+            {
+                if (number % 2 != 0)
+                {
+                    Program.WrongInputForEvenCheck();
+                    isNumber = false;
+                }
+            }
+        } while (!isNumber);
+
+        return number;
+    }
+
     public static Discipline InputDiscipline()
     {
-        while (true)
-        {
-            string name = Console.ReadLine();   
+        string name = Console.ReadLine();
 
-            int contactHours = CheckInt("Введите количество аудиторных часов: ", 0, 10000);
-            int selfHours = CheckInt("Введите количество самостоятельных часов: ", 0, 10000);
+        int contactHours = CheckEvenInt("Введите количество аудиторных часов: ", 0, 10000);
+        int selfHours = CheckInt("Введите количество самостоятельных часов: ", 0, 10000);
 
 
-            return new Discipline(name, contactHours, selfHours);
-        }
+        return new Discipline(name, contactHours, selfHours);
     }
 
     public static Discipline InputRandom()
     {
-        while (true)
-        {
-            string name = Console.ReadLine();
+        string name = Console.ReadLine();
 
-            Random random = new Random();
-            int contactHours = random.Next(1, 10000);
-            int selfHours = random.Next(1, 10000);
+        Random random = new Random();
+        int contactHours = random.Next(1, 10000);
+        int selfHours = random.Next(1, 10000);
 
-            return new Discipline(name, contactHours, selfHours);
-        }
+        return new Discipline(name, contactHours, selfHours);
     }
 }
-
