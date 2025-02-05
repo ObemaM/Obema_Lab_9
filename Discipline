@@ -1,3 +1,4 @@
+
 using System;
 
 public class Discipline
@@ -77,11 +78,19 @@ public class Discipline
 
     public static Discipline operator ++(Discipline discipline)
     {
-        if (discipline.ContactHours + 2 > discipline.ContactHours + discipline.SelfHours)
+        int newContact = discipline.ContactHours + 2;
+        int newSelf = discipline.SelfHours - 2;
+
+        // Проверка условий
+        if (newContact + newSelf > discipline.ContactHours + discipline.SelfHours)
             throw new InvalidOperationException("Сумма часов превышает общий лимит");
-        discipline.ContactHours += 2;
-        discipline.SelfHours -= 2;
-        return discipline;
+
+        // Новый объект вместо изменения текущего
+        return new Discipline(
+            discipline.Name,
+            newContact,
+            newSelf
+        );
     }
 
     public static implicit operator int(Discipline discipline)
@@ -91,7 +100,7 @@ public class Discipline
 
     public static explicit operator double(Discipline discipline)
     {
-        return (double)discipline.ContactHours / (discipline.ContactHours + discipline.SelfHours) * 100;
+        return (double)discipline.ContactHours / (discipline.ContactHours + discipline.SelfHours);
     }
 
     public static double operator !(Discipline discipline)
@@ -101,12 +110,12 @@ public class Discipline
 
     public static bool operator >=(Discipline d1, Discipline d2)
     {
-        return d1.ContactHours + d1.SelfHours >= d2.ContactHours + d2.SelfHours;
+        return d1.CalculateUnits() >= d2.CalculateUnits();
     }
 
     public static bool operator <=(Discipline d1, Discipline d2)
     {
-        return d1.ContactHours + d1.SelfHours <= d2.ContactHours + d2.SelfHours;
+        return d1.CalculateUnits() <= d2.CalculateUnits();
     }
 
     public override bool Equals(object obj)
