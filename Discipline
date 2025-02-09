@@ -8,11 +8,6 @@ public class Discipline
     private int selfHours;
     private static int objectCount = 0;
 
-    public static object[] DisciplineInfo(Discipline discipline)
-    {
-        return [discipline.Name, discipline.ContactHours, discipline.SelfHours];
-    }
-
     public string Name
     {
         get => name;
@@ -61,9 +56,9 @@ public class Discipline
         objectCount++;
     }
 
-    public static int CalculateUnitsStatic(int contactHours, int selfHours)
+    public static int CalculateUnitsStatic(Discipline discipline)
     {
-        return (contactHours + selfHours) / 38;
+        return (discipline.ContactHours + discipline.SelfHours) / 38;
     }
 
     public int CalculateUnits()
@@ -81,11 +76,9 @@ public class Discipline
         int newContact = discipline.ContactHours + 2;
         int newSelf = discipline.SelfHours - 2;
 
-        // Проверка условий
-        if (newContact + newSelf > discipline.ContactHours + discipline.SelfHours)
+        if (newSelf < 2)
             throw new InvalidOperationException("Сумма часов превышает общий лимит");
 
-        // Новый объект вместо изменения текущего
         return new Discipline(
             discipline.Name,
             newContact,
@@ -129,4 +122,9 @@ public class Discipline
             return false;
         }
     }
+    public static void ResetObjectCount()
+    {
+        objectCount = 0;
+    }
+
 }
