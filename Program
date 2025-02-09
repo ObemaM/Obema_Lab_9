@@ -1,10 +1,82 @@
-
 using Obema_Lab;
 using System;
 using System.Diagnostics.Contracts;
 
 public class Program
 {
+    public static string NameInput(string input)
+    {
+        if (!string.IsNullOrEmpty(input))
+            return input;
+        else
+            return "Без названия";
+    }
+
+    public static int CheckInt(string message, int min, int max)
+    {
+        int number;
+        bool isNumber;
+        do
+        {
+            Console.Write(message);
+            isNumber = int.TryParse(Console.ReadLine(), out number);
+            if (!isNumber || number < min || number > max)
+            {
+                WrongInputForCheckInt(min, max);
+                isNumber = false;
+            }
+        } while (!isNumber);
+
+        return number;
+    }
+
+    public static int CheckEvenInt(string message, int min, int max)
+    {
+        int number;
+        bool isNumber;
+        do
+        {
+            Console.Write(message);
+            isNumber = int.TryParse(Console.ReadLine(), out number);
+            if (!isNumber || number < min || number > max)
+            {
+                WrongInputForCheckInt(min, max);
+                isNumber = false;
+            }
+            else
+            {
+                if (number % 2 != 0)
+                {
+                    WrongInputForEvenCheck();
+                    isNumber = false;
+                }
+            }
+        } while (!isNumber);
+
+        return number;
+    }
+
+    public static Discipline InputDiscipline()
+    {
+        string name = Console.ReadLine();
+
+        int contactHours = CheckEvenInt("Введите количество аудиторных часов: ", 0, 10000);
+        int selfHours = CheckInt("Введите количество самостоятельных часов: ", 0, 10000);
+
+
+        return new Discipline(name, contactHours, selfHours);
+    }
+
+    public static Discipline InputRandom()
+    {
+        string name = Console.ReadLine();
+
+        Random random = new Random();
+        int contactHours = random.Next(1, 10000);
+        int selfHours = random.Next(1, 10000);
+
+        return new Discipline(name, contactHours, selfHours);
+    }
     public static void WrongInputForCheckInt(int min, int max)
     {
         Text($"Некорректный ввод! Введите целое число от {min} до {max}.");
@@ -25,7 +97,7 @@ public class Program
         Console.Write(message);
     }
 
-    public static void DisplayArray(object[][] displayArray)
+    public static void DisplayArray(Discipline[] displayArray)
     {
         for (int i = 0; i < displayArray.Length; i++)
         {
@@ -34,12 +106,11 @@ public class Program
         }
     }
 
-    public static void DisplayInfo(object[] disciplineInfo)
+    public static void DisplayInfo(Discipline discipline)
     {
-        string name = (string)disciplineInfo[0];
-        int contactHours = (int)disciplineInfo[1];
-        int selfHours = (int)disciplineInfo[2];
-
+        string name = discipline.Name;
+        int contactHours = discipline.ContactHours;
+        int selfHours = discipline.SelfHours;
         Text($"Название: {name}");
         Text($"Аудиторные часы: {contactHours}");
         Text($"Самостоятельные часы: {selfHours}");
@@ -58,10 +129,8 @@ public class Program
             totalUnits += units * 38;
         }
 
-         return (double)totalCredits / disciplineCount;
+        return (double)totalCredits / disciplineCount;
     }
-
-
 
     public static void Main(string[] args)
     {
@@ -80,7 +149,7 @@ public class Program
             Text("5. Завершить ввод (Часть 1 и 2)");
             Text("6. Массив дисциплин (Часть 3)");
             Text("7. Выход из программы");
-            int choice = InputSome.CheckInt("Введите номер действия: ", 1, 7);
+            int choice = CheckInt("Введите номер действия: ", 1, 7);
 
             switch (choice)
             {
@@ -96,7 +165,7 @@ public class Program
                             Text("\n1. Добавить дисциплину вручную");
                             Text("2. Добавить дисциплину рандомно");
 
-                            int how = InputSome.CheckInt("Введите номер действия: ", 1, 2);
+                            int how = CheckInt("Введите номер действия: ", 1, 2);
 
                             switch (how)
                             {
@@ -112,7 +181,7 @@ public class Program
                                         }
 
                                         SmallText("\nВведите название: ");
-                                        disciplines[len - 1] = InputSome.InputDiscipline();
+                                        disciplines[len - 1] = InputDiscipline();
                                         Text("\nДисциплина добавлена");
                                         count++;
                                         break;
@@ -129,7 +198,7 @@ public class Program
                                         }
 
                                         SmallText("\nВведите название: ");
-                                        disciplines[len - 1] = InputSome.InputRandom();
+                                        disciplines[len - 1] = InputRandom();
                                         Text("\nДисциплина добавлена");
                                         count++;
                                         break;
@@ -151,8 +220,7 @@ public class Program
                         for (int i = 0; i < len; i++)
                         {
                             Text($"\nИнформация о дисциплине {i + 1}:");
-                            object[] disciplineInfo = Discipline.DisciplineInfo(disciplines[i]);
-                            DisplayInfo(disciplineInfo);
+                            DisplayInfo(disciplines[i]);
                         }
                     }
                     break;
@@ -160,8 +228,8 @@ public class Program
                     {
                         if (len > 1)
                         {
-                            int first = InputSome.CheckInt("\nВыберите номер дисциплины для сравнения: ", 1, len);
-                            int second = InputSome.CheckInt($"Выберите номер дисциплины для сравнения с дисциплиной {first}: ", 1, len);
+                            int first = CheckInt("\nВыберите номер дисциплины для сравнения: ", 1, len);
+                            int second = CheckInt($"Выберите номер дисциплины для сравнения с дисциплиной {first}: ", 1, len);
                             if (disciplines[first - 1].Equals(disciplines[second - 1]))
                                 Text("\nДисциплины одинаковы");
                             else
@@ -175,9 +243,9 @@ public class Program
                     {
                         if (len > 1)
                         {
-                            int number = InputSome.CheckInt("Выберите номер дисциплины для редактирования: ", 1, len);
+                            int number = CheckInt("Выберите номер дисциплины для редактирования: ", 1, len);
                             SmallText("\nВведите название: ");
-                            disciplines[number - 1] = InputSome.InputDiscipline();
+                            disciplines[number - 1] = InputDiscipline();
                             Text("Дисциплина отредактирована");
                         }
                         else
@@ -196,31 +264,28 @@ public class Program
                             Text($"\nДисциплина {i + 1}");
                             Console.ForegroundColor = originalColor;
 
-                            int contactHours = disciplines[i].ContactHours;
-                            int selfHours = disciplines[i].SelfHours;
-
                             Text("\nЧасть 1");
-                            Text($"\nКредиты для дисциплины {i + 1}: {Discipline.CalculateUnitsStatic(contactHours, selfHours)}");
+                            Text($"\nКредиты для дисциплины {i + 1}: {Discipline.CalculateUnitsStatic(disciplines[i])}");
                             Text("Метод копирования: Кредиты для дисциплины 1: " + disciplines[0].CalculateUnits());
                             Text("Общее количество дисциплин: " + Discipline.GetObjectCount());
 
                             Text("\nЧасть 2");
                             try
                             {
-                                Text($"\nПосле увеличения аудиторных часов у дисциплины {i + 1}:");
-                                object[] disciplineInfoPlus = Discipline.DisciplineInfo(++disciplines[i]);
-                                DisplayInfo(disciplineInfoPlus);
+                                disciplines[i] = ++disciplines[i];
+                                DisplayInfo(disciplines[i]);
                             }
                             catch (Exception ex)
                             {
                                 Text($"Увеличение количества аудиторных часов невозможно: {ex.Message}");
                             }
 
+                            int uneven = disciplines[i];
                             Text($"\nДоля самостоятельной работы у дисциплины {i + 1}: {Math.Round(!disciplines[i], 3)}");
                             Text($"Доля аудиторной работы у дисциплины {i + 1}: {Math.Round((double)disciplines[i], 3)}");
-                            Text($"Количество пар по дисциплине {i + 1}: {disciplines[i]}");
+                            Text($"Количество пар по дисциплине {i + 1}: {uneven}");
 
-                            Text("\nСравнение по суммарному количеству часов: ");
+                            Text("\nСравнение по количеству зачетных единиц: ");
                             if (i == 1 && i + 1 < len)
                             {
                                 if (disciplines[i] >= disciplines[i + 1])
@@ -247,14 +312,14 @@ public class Program
                     }
                     else
                     {
-                        int number = InputSome.CheckInt("\nВведите количество дисциплин в массиве: ", 1, 10);
+                        int number = CheckInt("\nВведите количество дисциплин в массиве: ", 1, 10);
                         DisciplineArray disciplineArray = new DisciplineArray(number);
 
                         ConsoleColor originalColor = Console.ForegroundColor;
                         Console.ForegroundColor = ConsoleColor.Red;
                         Text($"\nМассив дисциплин");
                         Console.ForegroundColor = originalColor;
-                        object[][] displayArray = disciplineArray.DisplayAll();
+                        Discipline[] displayArray = disciplineArray.DisplayAll();
                         DisplayArray(displayArray);
 
                         Text($"\nСредневзвешенное количество зачётных единиц: {Math.Round(CalculateAverageCredits(disciplineArray), 3)}");
@@ -262,12 +327,11 @@ public class Program
                         Text("\nРабота с индексатором в данном массиве:");
                         try
                         {
-                            int index = InputSome.CheckInt("\nВведите индекс дисциплины в массиве: ", -100, 100);
+                            int index = CheckInt("\nВведите индекс дисциплины в массиве: ", -100, 100);
                             Text($"Изменение дисциплины по индексу {index}.");
                             SmallText("\nВведите название: ");
-                            disciplineArray[index] = new Discipline(InputSome.NameInput(Console.ReadLine()), InputSome.CheckInt("Введите количество аудиторных часов: ", 1, 10000), InputSome.CheckInt("Введите количество самостоятельных часов: ", 1, 10000));
-                            object[] disciplineInfoIndex = Discipline.DisciplineInfo(disciplineArray[index]);
-                            DisplayInfo(disciplineInfoIndex);
+                            disciplineArray[index] = new Discipline(NameInput(Console.ReadLine()), CheckInt("Введите количество аудиторных часов: ", 1, 10000), CheckInt("Введите количество самостоятельных часов: ", 1, 10000));
+                            DisplayInfo(disciplineArray[index]);
                         }
                         catch (Exception ex)
                         {
@@ -276,7 +340,7 @@ public class Program
 
                         Text("\nКопирование массива:");
                         DisciplineArray copiedArray = new DisciplineArray(disciplineArray);
-                        object[][] displayCopy = copiedArray.DisplayAll();
+                        Discipline[] displayCopy = copiedArray.DisplayAll();
                         DisplayArray(displayCopy);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Text($"\nКопирование завершено");
