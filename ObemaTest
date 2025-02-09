@@ -1,0 +1,273 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Obema_Lab;
+using System;
+
+namespace DisciplineTests
+{
+    [TestClass]
+    public class DisciplineTests
+    {
+        public void ResetCounter()
+        {
+            Discipline.ResetObjectCount();
+        }
+
+        [TestMethod]
+        public void GetObjectCountTest()
+        {
+            ResetCounter();
+            Discipline original = new Discipline();
+            Discipline copy = new Discipline(original);
+            Assert.AreEqual(2, Discipline.GetObjectCount());
+        }
+
+        [TestMethod]
+        public void HollowConstructor()
+        {
+            Discipline discipline = new Discipline();
+            Assert.AreEqual("Новая дисциплина", discipline.Name);
+            Assert.AreEqual(0, discipline.ContactHours);
+            Assert.AreEqual(0, discipline.SelfHours);
+        }
+
+        [TestMethod]
+        public void ConstructorWithSomething()
+        {
+            Discipline discipline = new Discipline("Математика", 40, 60);
+            Assert.AreEqual("Математика", discipline.Name);
+            Assert.AreEqual(40, discipline.ContactHours);
+            Assert.AreEqual(60, discipline.SelfHours);
+        }
+
+        [TestMethod]
+        public void NameSetter()
+        {
+            Discipline discipline = new Discipline {Name = "" };
+            Assert.AreEqual("Без названия", discipline.Name);
+        }
+
+        [TestMethod]
+        public void CalculateUnitsMethod()
+        {
+            Discipline discipline = new Discipline("Физика", 38, 38);
+            Assert.AreEqual(2, discipline.CalculateUnits());
+        }
+
+        [TestMethod]
+        public void PlusPlus()
+        {
+            Discipline discipline = new Discipline("Тестируем...", 10, 20);
+            Discipline newDiscipline = ++discipline;
+            Assert.AreEqual(12, newDiscipline.ContactHours);
+            Assert.AreEqual(18, newDiscipline.SelfHours);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ExceptionTestPlusPlus()
+        {
+            Discipline discipline = new Discipline("Тестируем...", 1, 1);
+            Discipline newDiscipline = ++discipline;
+        }
+
+        [TestMethod]
+        public void EqualsNonDisciplineObject()
+        {
+            Discipline discipline = new Discipline("Then we could be free..", 40, 60);
+            var invalidObj = "Объект не из класса Discipline";
+            Assert.IsFalse(discipline.Equals(invalidObj));
+        }
+
+        [TestMethod]
+        public void ImplicitInt()
+        {
+            Discipline discipline = new Discipline("Тестируем...", 7, 0);
+            int result = discipline;
+            Assert.AreEqual(4, result);
+        }
+
+        [TestMethod]
+        public void ExplicitDouble()
+        {
+            Discipline discipline = new Discipline("Тестируем...", 30, 70);
+            double ratio = (double)discipline;
+            Assert.AreEqual(0.3, ratio, 0.001);
+        }
+
+        [TestMethod]
+        public void EqualsTrue()
+        {
+            Discipline d1 = new Discipline("Тестируем...", 10, 20);
+            Discipline d2 = new Discipline("Тестируем...", 10, 20);
+            Assert.IsTrue(d1.Equals(d2));
+        }
+
+        [TestMethod]
+        public void LogicalNot()
+        {
+            Discipline discipline = new Discipline("Тестируем...", 30, 70);
+            double result = !discipline;
+            Assert.AreEqual(70.0, result, 0.001, "Должно выйти 70% работы");
+        }
+
+        [TestMethod]
+        public void CompareBoth()
+        {
+            Discipline d1 = new Discipline("А", int.MaxValue - 1, 1);
+            Discipline d2 = new Discipline("В", int.MaxValue, 0); 
+            Assert.IsTrue(d1 <= d2);
+            Assert.IsTrue(d1 >= d2);
+        }
+
+        [TestMethod]
+        public void CalculateUnitsStaticTest()
+        {
+            Discipline discipline = new Discipline("Тестируем...", 40, 35);
+            int units = Discipline.CalculateUnitsStatic(discipline);
+            Assert.AreEqual(1, units);
+        }
+
+        [TestMethod]
+        public void EqualsDifferentName()
+        {
+            Discipline discipline1 = new Discipline("Математика", 40, 80);
+            Discipline discipline2 = new Discipline("Физика", 40, 80);
+            bool result = discipline1.Equals(discipline2);
+            Assert.IsFalse(result);
+        }
+    }
+
+    [TestClass]
+    public class DisciplineArrayTests
+    {
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void SetterException()
+        {
+            DisciplineArray arr = new DisciplineArray(3);
+            arr[-1] = new Discipline("Ошибка", 0, 0);
+        }
+
+        [TestMethod]
+        public void CopyConstructor()
+        {
+            DisciplineArray original = new DisciplineArray(2);
+            original.disciplines[0] = new Discipline("Математика", 40, 60);
+            original.disciplines[1] = null;
+
+            DisciplineArray copy = new DisciplineArray(original);
+
+            Assert.AreEqual(original.disciplines.Length, copy.disciplines.Length);
+            Assert.AreNotSame(original.disciplines, copy.disciplines);
+
+            Assert.IsNotNull(copy.disciplines[0]);
+            Assert.AreEqual("Математика", copy.disciplines[0].Name);
+            Assert.AreNotSame(original.disciplines[0], copy.disciplines[0]);
+
+            Assert.IsNull(copy.disciplines[1]);
+        }
+
+        [TestMethod]
+        public void DisplayAllTest()
+        {
+            DisciplineArray arr = new DisciplineArray(0);
+            var result = arr.DisplayAll();
+            Assert.AreEqual(0, result.Length);
+        }
+
+        [TestMethod]
+        public void ConstructorWithSize()
+        {
+            DisciplineArray arr = new DisciplineArray(3);
+            Assert.AreEqual(3, arr.disciplines.Length);
+            Assert.IsNotNull(arr.disciplines[0]);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void IndexerException()
+        {
+            DisciplineArray arr = new DisciplineArray(1);
+            Discipline exc = arr[5];
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void IndexerExceptionBelowZero()
+        {
+            DisciplineArray arr = new DisciplineArray(1);
+            Discipline exc = arr[-3];
+        }
+
+        [TestMethod]
+        public void IndexerReturns()
+        {
+            DisciplineArray arr = new DisciplineArray(2);
+            arr.disciplines[0] = new Discipline("Last Call", 10, 10);
+            Assert.AreEqual("Last Call", arr[0].Name);
+        }
+
+        [TestMethod]
+        public void CopyConstructorDeepCopy()
+        {
+            DisciplineArray original = new DisciplineArray(1);
+            original.disciplines[0] = new Discipline("Runaway", 10, 10);
+            DisciplineArray copy = new DisciplineArray(original);
+
+            original.disciplines[0].ContactHours = 99;
+            Assert.AreEqual(10, copy.disciplines[0].ContactHours);
+        }
+
+        [TestMethod]
+        public void CalculateAverageCreditsTest()
+        {
+            DisciplineArray arr = new DisciplineArray(2);
+            arr.disciplines[0] = new Discipline("Last Call", 38, 38);
+            arr.disciplines[1] = new Discipline("We Major", 76, 0);
+            double avg = Program.CalculateAverageCredits(arr);
+            Assert.AreEqual(2.0, avg, 0.001);
+        }
+
+        [TestMethod]
+        public void CollectionCountTest()
+        {
+            int initialCount = DisciplineArray.GetCollectionCount();
+            DisciplineArray equal = new DisciplineArray();
+            Assert.AreEqual(initialCount + 1, DisciplineArray.GetCollectionCount());
+        }
+
+        [TestMethod]
+        public void SetterNullValue()
+        {
+            DisciplineArray myObject = new DisciplineArray(3);
+            myObject[1] = null;
+            Assert.IsNull(myObject.disciplines[1]);
+        }
+
+        [TestClass]
+        public class ProgramTest
+        {
+            [TestMethod]
+            public void NullString()
+            {
+                string result = Program.NameInput("");
+                Assert.AreEqual("Без названия", result);
+            }
+            
+            [TestMethod]
+            public void SpaceString()
+            {
+                string result = Program.NameInput("            ");
+                Assert.AreEqual("            ", result);
+            }
+
+            [TestMethod]
+            public void NameInputTest()
+            {
+                string result = Program.NameInput("Физика");
+                Assert.AreEqual("Физика", result);
+            }
+        }
+    }
+}
