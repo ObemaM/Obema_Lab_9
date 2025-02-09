@@ -1,4 +1,3 @@
-
 using System;
 
 namespace Obema_Lab
@@ -63,14 +62,9 @@ namespace Obema_Lab
             }
         }
 
-        public object[][] DisplayAll()
+        public Discipline[] DisplayAll()
         {
-            object[][] displayAll = new object[disciplines.Length][];
-
-            for (int i = 0; i < disciplines.Length; i++)
-                displayAll[i] = [disciplines[i].Name, disciplines[i].ContactHours, disciplines[i].SelfHours];
-
-            return (displayAll);
+            return disciplines;
         }
 
         public static int GetCollectionCount()
