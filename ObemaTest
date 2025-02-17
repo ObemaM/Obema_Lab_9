@@ -42,7 +42,7 @@ namespace DisciplineTests
         [TestMethod]
         public void NameSetter()
         {
-            Discipline discipline = new Discipline {Name = "" };
+            Discipline discipline = new Discipline { Name = "" };
             Assert.AreEqual("Без названия", discipline.Name);
         }
 
@@ -114,7 +114,7 @@ namespace DisciplineTests
         public void CompareBoth()
         {
             Discipline d1 = new Discipline("А", int.MaxValue - 1, 1);
-            Discipline d2 = new Discipline("В", int.MaxValue, 0); 
+            Discipline d2 = new Discipline("В", int.MaxValue, 0);
             Assert.IsTrue(d1 <= d2);
             Assert.IsTrue(d1 >= d2);
         }
@@ -197,7 +197,7 @@ namespace DisciplineTests
         public void IndexerExceptionBelowZero()
         {
             DisciplineArray arr = new DisciplineArray(1);
-            Discipline exc = arr[-3];
+            Discipline exc = arr[-4];
         }
 
         [TestMethod]
@@ -223,10 +223,10 @@ namespace DisciplineTests
         public void CalculateAverageCreditsTest()
         {
             DisciplineArray arr = new DisciplineArray(2);
-            arr.disciplines[0] = new Discipline("Last Call", 38, 38);
-            arr.disciplines[1] = new Discipline("We Major", 76, 0);
+            arr.disciplines[0] = new Discipline("Физика", 5636, 6621);
+            arr.disciplines[1] = new Discipline("Математика", 4696, 8774);
             double avg = Program.CalculateAverageCredits(arr);
-            Assert.AreEqual(2.0, avg, 0.001);
+            Assert.AreEqual(338.757, avg, 0.001);
         }
 
         [TestMethod]
@@ -254,7 +254,7 @@ namespace DisciplineTests
                 string result = Program.NameInput("");
                 Assert.AreEqual("Без названия", result);
             }
-            
+
             [TestMethod]
             public void SpaceString()
             {
