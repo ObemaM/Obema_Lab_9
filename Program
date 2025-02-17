@@ -119,17 +119,24 @@ public class Program
     public static double CalculateAverageCredits(DisciplineArray disciplineArray)
     {
         int totalCredits = 0;
-        int totalUnits = 0;
         int disciplineCount = disciplineArray.disciplines.Length;
+        double midweight = 0;
 
         for (int i = 0; i < disciplineCount; i++)
         {
-            int units = disciplineArray.disciplines[i].CalculateUnits();
+            int units = (int)disciplineArray.disciplines[i].CalculateUnits();
             totalCredits += units;
-            totalUnits += units * 38;
         }
 
-        return (double)totalCredits / disciplineCount;
+        double partOfStat = 1.0 / totalCredits;
+
+        for (int i = 0; i < disciplineCount; i++)
+        {
+            int units = (int)disciplineArray.disciplines[i].CalculateUnits();
+            midweight += units * partOfStat * units;
+        }
+
+        return midweight;
     }
 
     public static void Main(string[] args)
